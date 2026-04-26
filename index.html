@@ -26,7 +26,6 @@
         html{scroll-behavior:smooth}
         body{font-family:var(--sans);background:var(--white);color:var(--text-main);overflow-x:hidden}
 
-        /* Navigation */
         nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(184,232,200,0.3);padding:0 4rem;height:72px;display:flex;align-items:center;justify-content:space-between}
         .nav-logo{font-family:var(--serif);font-size:2.2rem;font-weight:300;letter-spacing:0.2em;color:var(--black);cursor:pointer}
         .nav-logo span{color:var(--mint-dark)}
@@ -40,13 +39,11 @@
         .nav-cart{background:var(--mint);border:none;cursor:pointer;font-size:0.8rem;font-weight:600;padding:0.6rem 1.4rem;border-radius:50px;color:var(--charcoal);transition:all 0.3s}
         .nav-cart:hover{background:var(--mint-dark);color:white}
 
-        /* Hero */
         .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:72px}
         .hero-left{background:var(--cream);padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center}
         .hero-title{font-family:var(--serif);font-size:4.8rem;font-weight:300;line-height:1.05;color:var(--black)}
         .hero-title em{font-style:italic;color:var(--mint-dark)}
 
-        /* Products */
         .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2rem;padding:2rem 4rem}
         .product-card{cursor:pointer;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1)}
         .product-card:hover{transform:translateY(-12px)}
@@ -54,18 +51,15 @@
         .product-img{width:100%;height:360px;background-size:cover;background-position:center;transition:transform 0.6s ease}
         .product-card:hover .product-img{transform:scale(1.08)}
 
-        /* Modals */
         .overlay{display:none;position:fixed;inset:0;background:rgba(26,24,24,0.75);z-index:200;align-items:center;justify-content:center;padding:1rem}
         .overlay.open{display:flex}
         .modal{background:var(--white);border-radius:24px;width:min(920px,95vw);max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 25px 70px rgba(0,0,0,0.15)}
         .modal-close{position:absolute;top:20px;right:20px;background:none;border:none;font-size:1.8rem;cursor:pointer}
 
-        /* Toast */
-        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--black);color:white;padding:14px 28px;border-radius:50px;font-size:0.95rem;z-index:1001;opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--black);color:white;padding:14px 28px;border-radius:50px;font-size:0.95rem;z-index:1001;opacity:0;transition:all 0.4s}
         .toast.show{opacity:1;transform:translateX(-50%) translateY(-8px)}
         .toast.success{background:#3a7a50}
 
-        /* Animations */
         .fade-up{opacity:0;transform:translateY(40px);transition:all 0.8s ease}
         .fade-up.visible{opacity:1;transform:translateY(0)}
     </style>
@@ -78,7 +72,7 @@
 <!-- WHATSAPP -->
 <a href="https://wa.me/9779800000000?text=Hello%20MINA!%20I'm%20interested%20in%20your%20products" target="_blank" style="position:fixed;bottom:25px;right:25px;background:#25D366;color:white;width:65px;height:65px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 10px 30px rgba(37,211,102,0.4);z-index:999;text-decoration:none">💬</a>
 
-<!-- NAV -->
+<!-- NAVIGATION -->
 <nav>
     <div class="nav-logo" onclick="window.location.reload()">MIN<span>A</span></div>
     <ul class="nav-links">
@@ -100,14 +94,14 @@
         <span style="color:var(--mint-dark);font-weight:500;letter-spacing:3px">NEW SEASON 2025</span>
         <h1 class="hero-title">Where Nepal<br><em>Meets</em> the World</h1>
         <p class="hero-tagline" style="font-family:var(--serif);font-size:1.25rem;color:var(--text-muted)">Elegance for every woman</p>
-        <div style="margin-top:2rem;display:flex;gap:1rem">
+        <div style="margin-top:2rem">
             <button onclick="document.getElementById('trending').scrollIntoView({behavior:'smooth'})" style="background:var(--black);color:white;padding:14px 32px;border:none;border-radius:50px;font-weight:600;cursor:pointer">Shop Now</button>
         </div>
     </div>
-    <div style="background:linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url('https://picsum.photos/id/1015/1200/900') center/cover"></div>
+    <div style="background:linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url('./images/hero.jpg') center/cover"></div>
 </section>
 
-<!-- PRODUCTS -->
+<!-- TRENDING PRODUCTS -->
 <section id="trending" style="padding:5rem 4rem">
     <div style="text-align:center;margin-bottom:3rem" class="fade-up">
         <span style="color:var(--mint-dark);letter-spacing:2px">TRENDING IN NEPAL</span>
@@ -198,7 +192,7 @@
 </div>
 
 <script>
-// ==================== FIREBASE CONFIG ====================
+// ==================== YOUR REAL FIREBASE CONFIG ====================
 const firebaseConfig = {
     apiKey: "AIzaSyCGStS6wAzpk_x7sY4_zx-WDnJEY5yrNIA",
     authDomain: "mina-marketplace.firebaseapp.com",
@@ -213,28 +207,26 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ==================== PRODUCTS ====================
+// ==================== PRODUCTS WITH ORIGINAL IMAGE PATHS ====================
 let allProducts = [
-  {id:1,name:'Dhaka Silk Saree',category:'Nepali Heritage',price:4800,oldPrice:6000,badge:'sale',img:'https://picsum.photos/id/1015/400/520',stars:5,reviews:128,stock:12,desc:'Handwoven Dhaka silk saree from Palpa',sizes:['Free'],colors:['#c0534a']},
-  {id:2,name:'Velvet Anarkali Kurta',category:'Kurtas',price:3200,badge:'new',img:'https://picsum.photos/id/201/400/520',stars:5,reviews:89,stock:8,desc:'Luxurious velvet Anarkali kurta',sizes:['XS','S','M','L','XL'],colors:['#8b6b9e']},
-  {id:3,name:'Mint Linen Co-ord Set',category:'Western',price:2850,badge:'hot',img:'https://picsum.photos/id/237/400/520',stars:4,reviews:64,stock:15,desc:'Comfortable linen co-ord set',sizes:['S','M','L','XL'],colors:['#B5EA5F']},
-  {id:4,name:'Block Heel Sandals',category:'Footwear',price:2200,oldPrice:2800,badge:'sale',img:'https://picsum.photos/id/180/400/520',stars:5,reviews:211,stock:20,desc:'Comfortable block heel sandals',sizes:['36','37','38','39'],colors:['#2A2826']},
-  {id:5,name:'Gunyo Cholo Set',category:'Nepali Heritage',price:5500,badge:'new',img:'https://picsum.photos/id/1016/400/520',stars:5,reviews:47,stock:5,desc:'Traditional Gunyo Cholo set',sizes:['Free'],colors:['#c0534a']},
-  {id:6,name:'Floral Maxi Dress',category:'Western',price:2600,img:'https://picsum.photos/id/133/400/520',stars:4,reviews:93,stock:18,desc:'Flowing floral maxi dress',sizes:['XS','S','M','L'],colors:['#EDCDC8']},
-  {id:7,name:'Allo Fabric Shawl',category:'Nepali Heritage',price:1800,badge:'new',img:'https://picsum.photos/id/201/400/520',stars:5,reviews:156,stock:25,desc:'Eco-friendly Allo fabric shawl',sizes:['Free'],colors:['#4a8b6b']},
-  {id:8,name:'Platform Sneakers',category:'Footwear',price:3500,img:'https://picsum.photos/id/180/400/520',stars:4,reviews:77,stock:12,desc:'Trendy platform sneakers',sizes:['36','37','38','39'],colors:['#FFFFFF']},
-  {id:9,name:'Slim-Fit Joggers',category:'Activewear',price:1650,badge:'hot',img:'https://picsum.photos/id/237/400/520',stars:5,reviews:204,stock:30,desc:'Comfortable slim-fit joggers',sizes:['XS','S','M','L'],colors:['#2A2826']},
-  {id:10,name:'Sports Bra',category:'Activewear',price:950,img:'https://picsum.photos/id/1015/400/520',stars:5,reviews:312,stock:50,desc:'High-support sports bra',sizes:['XS','S','M','L'],colors:['#B5EA5F']},
-  {id:11,name:'Satin Scrunchie Set',category:'Accessories',price:350,badge:'new',img:'https://picsum.photos/id/133/400/520',stars:5,reviews:430,stock:100,desc:'Set of 5 satin scrunchies',sizes:['One Size'],colors:['#EDCDC8']},
-  {id:12,name:'Beaded Tote Bag',category:'Accessories',price:1900,badge:'hot',img:'https://picsum.photos/id/180/400/520',stars:4,reviews:99,stock:10,desc:'Handmade beaded tote bag',sizes:['One Size'],colors:['#E8D5C4']}
+  {id:1,name:'Dhaka Silk Saree',category:'Nepali Heritage',price:4800,oldPrice:6000,badge:'sale',img:'./images/dhaka-silk-saree.jpg',stars:5,reviews:128,stock:12,desc:'Handwoven Dhaka silk saree from Palpa',sizes:['Free'],colors:['#c0534a']},
+  {id:2,name:'Velvet Anarkali Kurta',category:'Kurtas',price:3200,badge:'new',img:'./images/velvet-anarkali-kurta.jpg',stars:5,reviews:89,stock:8,desc:'Luxurious velvet Anarkali kurta',sizes:['XS','S','M','L','XL'],colors:['#8b6b9e']},
+  {id:3,name:'Mint Linen Co-ord Set',category:'Western',price:2850,badge:'hot',img:'./images/mint-linen-coord.jpg',stars:4,reviews:64,stock:15,desc:'Comfortable linen co-ord set',sizes:['S','M','L','XL'],colors:['#B5EA5F']},
+  {id:4,name:'Block Heel Sandals',category:'Footwear',price:2200,oldPrice:2800,badge:'sale',img:'./images/block-heel-sandals.jpg',stars:5,reviews:211,stock:20,desc:'Comfortable block heel sandals',sizes:['36','37','38','39'],colors:['#2A2826']},
+  {id:5,name:'Gunyo Cholo Set',category:'Nepali Heritage',price:5500,badge:'new',img:'./images/gunyo-cholo-set.jpg',stars:5,reviews:47,stock:5,desc:'Traditional Gunyo Cholo set',sizes:['Free'],colors:['#c0534a']},
+  {id:6,name:'Floral Maxi Dress',category:'Western',price:2600,img:'./images/floral-maxi-dress.jpg',stars:4,reviews:93,stock:18,desc:'Flowing floral maxi dress',sizes:['XS','S','M','L'],colors:['#EDCDC8']},
+  {id:7,name:'Allo Fabric Shawl',category:'Nepali Heritage',price:1800,badge:'new',img:'./images/allo-fabric-shawl.jpg',stars:5,reviews:156,stock:25,desc:'Eco-friendly Allo fabric shawl',sizes:['Free'],colors:['#4a8b6b']},
+  {id:8,name:'Platform Sneakers',category:'Footwear',price:3500,img:'./images/platform-sneakers.jpg',stars:4,reviews:77,stock:12,desc:'Trendy platform sneakers',sizes:['36','37','38','39'],colors:['#FFFFFF']},
+  {id:9,name:'Slim-Fit Joggers',category:'Activewear',price:1650,badge:'hot',img:'./images/slim-fit-joggers.jpg',stars:5,reviews:204,stock:30,desc:'Comfortable slim-fit joggers',sizes:['XS','S','M','L'],colors:['#2A2826']},
+  {id:10,name:'Sports Bra',category:'Activewear',price:950,img:'./images/sports-bra.jpg',stars:5,reviews:312,stock:50,desc:'High-support sports bra',sizes:['XS','S','M','L'],colors:['#B5EA5F']},
+  {id:11,name:'Satin Scrunchie Set',category:'Accessories',price:350,badge:'new',img:'./images/satin-scrunchie-set.jpg',stars:5,reviews:430,stock:100,desc:'Set of 5 satin scrunchies',sizes:['One Size'],colors:['#EDCDC8']},
+  {id:12,name:'Beaded Tote Bag',category:'Accessories',price:1900,badge:'hot',img:'./images/beaded-tote-bag.jpg',stars:4,reviews:99,stock:10,desc:'Handmade beaded tote bag',sizes:['One Size'],colors:['#E8D5C4']}
 ];
 
 let filteredProducts = [...allProducts];
 let cart = JSON.parse(localStorage.getItem('minaCart')) || [];
-let wishlist = JSON.parse(localStorage.getItem('minaWishlist')) || [];
 let currentUser = null;
 let selectedProduct = null;
-let selectedPayment = 'esewa';
 let authMode = 'login';
 
 // Render Products
@@ -253,6 +245,7 @@ function renderProducts() {
             </div>
         </div>
     `).join('');
+    
     setTimeout(() => document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible')), 100);
 }
 
@@ -263,26 +256,27 @@ function updateCart() {
     let total = 0;
 
     if (cart.length === 0) {
-        itemsDiv.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem">Your bag is empty</p>';
+        itemsDiv.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:3rem">Your bag is empty</p>';
         document.getElementById('cartTotalSection').style.display = 'none';
         return;
     }
 
     itemsDiv.innerHTML = cart.map((item, i) => {
-        total += item.price * (item.quantity || 1);
+        const qty = item.quantity || 1;
+        total += item.price * qty;
         return `
-            <div style="display:flex;gap:1rem;margin-bottom:1.5rem">
+            <div style="display:flex;gap:1rem;margin-bottom:1.5rem;border-bottom:1px solid #eee;padding-bottom:1rem">
                 <div style="width:70px;height:90px;background:url('${item.img}') center/cover;border-radius:8px"></div>
                 <div style="flex:1">
                     <div style="font-weight:500">${item.name}</div>
-                    <div style="color:var(--text-muted);font-size:0.9rem">NPR ${item.price}</div>
+                    <div style="color:var(--text-muted)">NPR ${item.price}</div>
                     <div style="margin-top:8px">
-                        <button onclick="changeQty(${i}, -1)" style="width:28px;height:28px">-</button>
-                        <span style="margin:0 10px">${item.quantity || 1}</span>
-                        <button onclick="changeQty(${i}, 1)" style="width:28px;height:28px">+</button>
+                        <button onclick="changeQty(${i}, -1)" style="width:28px;height:28px;border:1px solid #ddd">-</button>
+                        <span style="margin:0 12px">${qty}</span>
+                        <button onclick="changeQty(${i}, 1)" style="width:28px;height:28px;border:1px solid #ddd">+</button>
                     </div>
                 </div>
-                <button onclick="removeFromCart(${i})" style="background:none;border:none;color:#c0534a;cursor:pointer">Remove</button>
+                <button onclick="removeFromCart(${i})" style="background:none;border:none;color:#c0534a;cursor:pointer;align-self:start">Remove</button>
             </div>
         `;
     }).join('');
@@ -314,6 +308,7 @@ function addToCartFromModal() {
     showToast('Added to bag!', 'success');
 }
 
+// Open Cart
 function openCart() {
     document.getElementById('cartOverlay').classList.add('open');
     document.getElementById('cartSidebar').style.transform = 'translateX(0)';
@@ -345,7 +340,7 @@ function closeProductModal() {
 
 // Checkout
 function openCheckout() {
-    if (cart.length === 0) return showToast('Cart is empty');
+    if (cart.length === 0) return showToast('Your cart is empty');
     const total = cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
     document.getElementById('checkoutTotal').textContent = `NPR ${total.toLocaleString()}`;
     document.getElementById('checkoutOverlay').classList.add('open');
@@ -358,26 +353,24 @@ function closeCheckout() {
 function selectPayment(el, method) {
     document.querySelectorAll('.payment-option').forEach(e => e.classList.remove('selected'));
     el.classList.add('selected');
-    selectedPayment = method;
 }
 
-async function placeOrder() {
-    if (!currentUser) {
-        showToast('Please sign in to checkout', 'error');
-        closeCheckout();
-        openAuth();
-        return;
-    }
-    showToast('Order placed successfully! 🎉', 'success');
+function placeOrder() {
+    showToast('Order placed successfully! 🎉 Thank you for shopping with MINA', 'success');
     cart = [];
     localStorage.setItem('minaCart', JSON.stringify(cart));
     updateCart();
     closeCheckout();
 }
 
-// Auth
-function openAuth() { document.getElementById('authOverlay').classList.add('open'); }
-function closeAuth() { document.getElementById('authOverlay').classList.remove('open'); }
+// Auth Functions
+function openAuth() {
+    document.getElementById('authOverlay').classList.add('open');
+}
+
+function closeAuth() {
+    document.getElementById('authOverlay').classList.remove('open');
+}
 
 function switchAuthTab(mode) {
     authMode = mode;
@@ -398,7 +391,7 @@ async function handleAuth(e) {
         if (authMode === 'signup') {
             const result = await auth.createUserWithEmailAndPassword(email, password);
             await result.user.updateProfile({displayName: name});
-            showToast('Account created successfully!', 'success');
+            showToast('Account created successfully! Welcome to MINA', 'success');
         } else {
             await auth.signInWithEmailAndPassword(email, password);
             showToast('Signed in successfully!', 'success');
