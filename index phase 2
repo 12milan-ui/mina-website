@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINA — Elegance for Every Woman | Nepal's Premier Women's Fashion Marketplace</title>
+<meta name="description" content="Shop authentic Nepali heritage wear, modern fashion, activewear & accessories. Free shipping across Nepal. Supporting local artisans.">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* [PREVIOUS CSS FROM PHASE 1 - COPY ALL THE STYLES FROM ABOVE] */
+/* I'll include just the key additions for Phase 2 */
+
+/* Add these new styles to your existing CSS */
+
+/* AUTH MODAL */
+.auth-modal{max-width:450px;padding:3rem;margin:0 auto}
+.auth-title{font-family:var(--serif);font-size:2.5rem;font-weight:300;text-align:center;margin-bottom:0.5rem;color:var(--black)}
+.auth-subtitle{text-align:center;color:var(--text-muted);margin-bottom:2rem;font-size:0.9rem}
+.auth-tabs{display:flex;gap:0;margin-bottom:2rem;border-bottom:2px solid var(--cream)}
+.auth-tab{flex:1;padding:0.75rem;background:transparent;border:none;font-family:var(--sans);font-size:0.9rem;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s}
+.auth-tab.active{color:var(--black);border-bottom-color:var(--mint-dark)}
+.auth-form{display:flex;flex-direction:column;gap:1rem}
+.form-input{padding:0.9rem 1.2rem;border:1.5px solid var(--warm-grey);border-radius:12px;font-family:var(--sans);font-size:0.9rem;color:var(--text-main);transition:border-color 0.2s;background:var(--white)}
+.form-input:focus{outline:none;border-color:var(--black)}
+.form-submit{background:var(--black);color:var(--white);border:none;padding:1rem;font-family:var(--sans);font-size:0.85rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;border-radius:50px;cursor:pointer;transition:background 0.2s;margin-top:0.5rem}
+.form-submit:hover{background:var(--charcoal)}
+.form-submit:disabled{background:var(--warm-grey);cursor:not-allowed;opacity:0.6}
+.form-error{background:#ffe8e8;color:#c0534a;padding:0.75rem 1rem;border-radius:12px;font-size:0.85rem;margin-bottom:1rem;border:1px solid #c0534a}
+.form-success{background:#e8f5ee;color:#3a7a50;padding:0.75rem 1rem;border-radius:12px;font-size:0.85rem;margin-bottom:1rem;border:1px solid #3a7a50}
+.form-divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--text-muted);font-size:0.85rem}
+.form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:var(--warm-grey)}
+.social-login{display:flex;flex-direction:column;gap:0.75rem}
+.social-btn-auth{padding:0.75rem;border:1.5px solid var(--warm-grey);background:var(--white);border-radius:50px;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem;font-family:var(--sans)}
+.social-btn-auth:hover{border-color:var(--black)}
+
+/* ACCOUNT/PROFILE MODAL */
+.account-modal{max-width:800px;padding:3rem}
+.account-header{text-align:center;margin-bottom:3rem}
+.account-avatar{width:80px;height:80px;border-radius:50%;background:var(--mint-light);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--mint-dark);font-weight:600;font-family:var(--serif)}
+.account-name{font-family:var(--serif);font-size:2rem;font-weight:300;margin-bottom:0.3rem;color:var(--black)}
+.account-email{color:var(--text-muted);font-size:0.9rem}
+.account-tabs{display:flex;gap:1.5rem;border-bottom:2px solid var(--cream);margin-bottom:2rem;justify-content:center}
+.account-tab{padding:0.75rem 1.5rem;background:transparent;border:none;font-size:0.9rem;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;font-family:var(--sans)}
+.account-tab.active{color:var(--black);border-bottom-color:var(--mint-dark)}
+.account-content{display:none}
+.account-content.active{display:block}
+.order-list{display:flex;flex-direction:column;gap:1rem}
+.order-item{padding:1.5rem;border:1.5px solid var(--warm-grey);border-radius:16px;transition:border-color 0.2s}
+.order-item:hover{border-color:var(--black)}
+.order-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem}
+.order-id{font-weight:600;font-size:0.9rem;color:var(--black)}
+.order-date{font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem}
+.order-status{padding:0.3rem 0.8rem;border-radius:50px;font-size:0.7rem;font-weight:500;text-transform:uppercase;letter-spacing:0.05em}
+.status-pending{background:#fff3cd;color:#856404}
+.status-processing{background:#cce5ff;color:#004085}
+.status-shipped{background:#d4edda;color:#155724}
+.status-delivered{background:#d1ecf1;color:#0c5460}
+.order-items-preview{display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.order-item-thumb{width:50px;height:65px;border-radius:8px;background:var(--cream);background-size:cover;background-position:center}
+.order-total{font-weight:600;color:var(--black);font-size:1rem}
+
+/* CHECKOUT MODAL */
+.checkout-modal{max-width:900px;padding:3rem}
+.checkout-title{font-family:var(--serif);font-size:2.5rem;font-weight:300;margin-bottom:2rem;text-align:center;color:var(--black)}
+.checkout-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:3rem}
+.checkout-section{margin-bottom:2rem}
+.section-title-small{font-family:var(--serif);font-size:1.3rem;font-weight:500;margin-bottom:1rem;color:var(--black)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.payment-methods{display:flex;flex-direction:column;gap:0.75rem}
+.payment-option{padding:1rem 1.2rem;border:2px solid var(--warm-grey);border-radius:12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:1rem}
+.payment-option:hover{border-color:var(--black)}
+.payment-option.selected{border-color:var(--mint-dark);background:var(--mint-light)}
+.payment-radio{width:20px;height:20px;border:2px solid var(--warm-grey);border-radius:50%;position:relative;flex-shrink:0}
+.payment-option.selected .payment-radio{border-color:var(--mint-dark)}
+.payment-option.selected .payment-radio::after{content:'';position:absolute;inset:3px;background:var(--mint-dark);border-radius:50%}
+.payment-info{flex:1}
+.payment-name{font-weight:500;font-size:0.9rem;margin-bottom:0.2rem;color:var(--black)}
+.payment-desc{font-size:0.75rem;color:var(--text-muted)}
+.order-summary{background:var(--cream);padding:1.5rem;border-radius:16px;height:fit-content}
+.summary-item{display:flex;justify-content:space-between;margin-bottom:0.75rem;font-size:0.9rem;color:var(--text-muted)}
+.summary-total{display:flex;justify-content:space-between;font-family:var(--serif);font-size:1.3rem;font-weight:500;margin-top:1rem;padding-top:1rem;border-top:2px solid var(--nude);color:var(--black)}
+.place-order-btn{width:100%;background:var(--mint);color:var(--charcoal);border:none;padding:1.1rem;font-family:var(--sans);font-size:0.9rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;border-radius:50px;cursor:pointer;margin-top:1.5rem;transition:all 0.2s}
+.place-order-btn:hover{background:var(--mint-dark);color:var(--white)}
+.place-order-btn:disabled{background:var(--warm-grey);cursor:not-allowed;opacity:0.6}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(26,24,24,0.7);z-index:200;align-items:center;justify-content:center;padding:2rem;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px;width:min(900px,90vw);max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:1rem;right:1rem;background:var(--white);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1.2rem;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:background 0.2s}
+.modal-close:hover{background:var(--cream)}
+
+/* USER BUTTON */
+.nav-user{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:0.5rem;padding:0.4rem 1rem;border-radius:50px;transition:background 0.2s}
+.nav-user:hover{background:var(--cream)}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--mint-light);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--mint-dark)}
+
+/* RESPONSIVE ADDITIONS */
+@media(max-width:768px){
+  .checkout-grid{grid-template-columns:1fr}
+  .auth-modal,.account-modal,.checkout-modal{padding:2rem 1.5rem}
+  .form-row{grid-template-columns:1fr}
+}
+
+/* COPY ALL OTHER STYLES FROM PHASE 1 HERE */
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- WHATSAPP BUTTON -->
+<a href="https://wa.me/9779800000000?text=Hello%20MINA!%20I'm%20interested%20in%20your%20products" class="whatsapp-float" target="_blank">
+  <svg viewBox="0 0 32 32"><path d="M16 0C7.164 0 0 7.163 0 16c0 2.824.738 5.48 2.026 7.778L0 32l8.366-2.194A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333A13.285 13.285 0 0 1 8.667 27.2l-.384-.24-4.037 1.058 1.076-3.933-.262-.398A13.257 13.257 0 0 1 2.667 16c0-7.364 5.97-13.333 13.333-13.333S29.333 8.636 29.333 16 23.364 29.333 16 29.333zm7.333-9.777c-.402-.2-2.377-1.173-2.745-1.308-.368-.134-.636-.2-.903.201-.268.402-1.037 1.308-1.27 1.576-.235.268-.469.301-.87.1-.402-.2-1.695-.625-3.228-1.993-1.194-1.064-2-2.38-2.234-2.782-.235-.402-.025-.619.176-.82.18-.18.402-.469.603-.704.2-.234.268-.402.402-.67.134-.268.067-.502-.033-.704-.1-.2-.903-2.177-1.237-2.982-.325-.783-.655-.678-.903-.69-.234-.011-.502-.014-.77-.014s-.703.1-1.071.502c-.368.402-1.405 1.375-1.405 3.351s1.438 3.887 1.638 4.154c.2.268 2.824 4.312 6.841 6.048.955.413 1.701.66 2.282.845.959.305 1.831.262 2.52.159.769-.115 2.377-.971 2.712-1.91.334-.938.334-1.741.234-1.91-.1-.168-.368-.268-.77-.469z"/></svg>
+</a>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-logo" onclick="window.location.reload()">MIN<span>A</span></div>
+  <ul class="nav-links">
+    <li><a href="#categories">Shop All</a></li>
+    <li><a href="#heritage">Heritage</a></li>
+    <li><a href="#trending">Trending</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-icon" onclick="scrollToSearch()">⌕</button>
+    <button class="nav-icon" onclick="toggleWishlistView()">
+      ♡
+      <span class="nav-badge" id="wishlistBadge" style="display:none">0</span>
+    </button>
+    <button class="nav-icon" id="userBtn" onclick="openAuth()">👤</button>
+    <button class="nav-cart" onclick="openCart()" id="cartBtn">Bag (0)</button>
+  </div>
+</nav>
+
+<!-- [COPY ALL HTML FROM PHASE 1 HERE] -->
+
+<!-- AUTH MODAL -->
+<div class="overlay" id="authOverlay" onclick="if(event.target===this)closeAuth()">
+  <div class="modal auth-modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <h2 class="auth-title">Welcome to MINA</h2>
+    <p class="auth-subtitle">Sign in to unlock exclusive benefits & track your orders</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">Create Account</button>
+    </div>
+    <div id="authError" class="form-error" style="display:none"></div>
+    <div id="authSuccess" class="form-success" style="display:none"></div>
+    <form class="auth-form" id="authForm" onsubmit="handleAuth(event)">
+      <input type="email" class="form-input" id="authEmail" placeholder="Email address" required>
+      <input type="password" class="form-input" id="authPassword" placeholder="Password (min 6 characters)" required minlength="6">
+      <div id="nameField" style="display:none">
+        <input type="text" class="form-input" id="authName" placeholder="Full name">
+      </div>
+      <button type="submit" class="form-submit" id="authSubmitBtn">Sign In</button>
+    </form>
+    <div class="form-divider">or continue with</div>
+    <div class="social-login">
+      <button class="social-btn-auth" onclick="googleSignIn()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.6 9.2c0-.6-.1-1.2-.2-1.8H9v3.4h4.8c-.2 1.1-.8 2-1.7 2.6v2.2h2.7c1.6-1.5 2.5-3.7 2.5-6.4z"/><path fill="#34A853" d="M9 18c2.4 0 4.5-.8 6-2.2l-2.7-2.2c-.8.5-1.8.8-3.3.8-2.5 0-4.7-1.7-5.5-4H.8v2.3C2.3 15.8 5.5 18 9 18z"/><path fill="#FBBC04" d="M3.5 10.5c-.2-.5-.3-1.1-.3-1.7s.1-1.2.3-1.7V4.8H.8C.3 5.8 0 6.9 0 8s.3 2.2.8 3.2l2.7-2.2z"/><path fill="#EA4335" d="M9 3.6c1.4 0 2.7.5 3.6 1.4l2.7-2.7C13.5.9 11.4 0 9 0 5.5 0 2.3 2.2.8 5.3l2.7 2.2C4.3 5.3 6.5 3.6 9 3.6z"/></svg>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT MODAL -->
+<div class="overlay" id="accountOverlay" onclick="if(event.target===this)closeAccount()">
+  <div class="modal account-modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeAccount()">✕</button>
+    <div class="account-header">
+      <div class="account-avatar" id="accountAvatar">M</div>
+      <div class="account-name" id="accountName">Guest User</div>
+      <div class="account-email" id="accountEmail"></div>
+    </div>
+    <div class="account-tabs">
+      <button class="account-tab active" onclick="switchAccountTab('orders')">My Orders</button>
+      <button class="account-tab" onclick="switchAccountTab('wishlist')">Wishlist</button>
+      <button class="account-tab" onclick="switchAccountTab('settings')">Settings</button>
+    </div>
+    <div class="account-content active" id="ordersContent">
+      <div class="order-list" id="ordersList">
+        <div style="text-align:center;padding:3rem;color:var(--text-muted)">
+          <div style="font-size:3rem;margin-bottom:1rem;opacity:0.3">📦</div>
+          <p>No orders yet</p>
+          <p style="font-size:0.85rem;margin-top:0.5rem">Start shopping to see your orders here</p>
+        </div>
+      </div>
+    </div>
+    <div class="account-content" id="wishlistContent">
+      <div id="wishlistGrid"></div>
+    </div>
+    <div class="account-content" id="settingsContent">
+      <div style="display:flex;flex-direction:column;gap:1rem;max-width:400px;margin:0 auto">
+        <button class="btn-primary" onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="overlay" id="checkoutOverlay" onclick="if(event.target===this)closeCheckout()">
+  <div class="modal checkout-modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeCheckout()">✕</button>
+    <h2 class="checkout-title">Checkout</h2>
+    <div class="checkout-grid">
+      <div>
+        <div class="checkout-section">
+          <h3 class="section-title-small">Shipping Information</h3>
+          <form id="checkoutForm">
+            <div class="form-row">
+              <input type="text" class="form-input" id="firstName" placeholder="First Name" required>
+              <input type="text" class="form-input" id="lastName" placeholder="Last Name" required>
+            </div>
+            <input type="email" class="form-input" id="checkoutEmail" placeholder="Email" required style="margin-top:1rem">
+            <input type="tel" class="form-input" id="phone" placeholder="Phone Number" required style="margin-top:1rem">
+            <input type="text" class="form-input" id="address1" placeholder="Address Line 1" required style="margin-top:1rem">
+            <input type="text" class="form-input" id="address2" placeholder="Address Line 2 (Optional)" style="margin-top:1rem">
+            <div class="form-row" style="margin-top:1rem">
+              <input type="text" class="form-input" id="city" placeholder="City" required>
+              <select class="form-input" id="province" required>
+                <option value="">Select Province</option>
+                <option value="Province 1">Province 1</option>
+                <option value="Madhesh">Madhesh</option>
+                <option value="Bagmati">Bagmati</option>
+                <option value="Gandaki">Gandaki</option>
+                <option value="Lumbini">Lumbini</option>
+                <option value="Karnali">Karnali</option>
+                <option value="Sudurpashchim">Sudurpashchim</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="checkout-section">
+          <h3 class="section-title-small">Payment Method</h3>
+          <div class="payment-methods">
+            <div class="payment-option selected" onclick="selectPayment(this,'esewa')">
+              <div class="payment-radio"></div>
+              <div class="payment-info">
+                <div class="payment-name">eSewa</div>
+                <div class="payment-desc">Pay securely with eSewa wallet</div>
+              </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this,'khalti')">
+              <div class="payment-radio"></div>
+              <div class="payment-info">
+                <div class="payment-name">Khalti</div>
+                <div class="payment-desc">Quick payment via Khalti</div>
+              </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this,'imepay')">
+              <div class="payment-radio"></div>
+              <div class="payment-info">
+                <div class="payment-name">IME Pay</div>
+                <div class="payment-desc">Bank transfer via IME Pay</div>
+              </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this,'cod')">
+              <div class="payment-radio"></div>
+              <div class="payment-info">
+                <div class="payment-name">Cash on Delivery</div>
+                <div class="payment-desc">Pay when you receive your order</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="order-summary">
+          <h3 class="section-title-small">Order Summary</h3>
+          <div class="summary-item"><span>Subtotal</span><span id="checkoutSubtotal">NPR 0</span></div>
+          <div class="summary-item"><span>Shipping</span><span>FREE</span></div>
+          <div class="summary-item"><span>Tax (13%)</span><span id="checkoutTax">NPR 0</span></div>
+          <div class="summary-total"><span>Total</span><span id="checkoutTotal">NPR 0</span></div>
+          <button class="place-order-btn" onclick="placeOrder()" id="placeOrderBtn">Place Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- [COPY CART SIDEBAR AND REST OF HTML FROM PHASE 1] -->
+
+<script>
+// ============================================
+// FIREBASE CONFIGURATION
+// ============================================
+// REPLACE THESE WITH YOUR ACTUAL FIREBASE CONFIG FROM STEP 1
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// ============================================
+// GLOBAL STATE
+// ============================================
+let currentUser = null;
+let cart = [];
+let wishlist = [];
+let allProducts = [
+  /* COPY YOUR PRODUCT ARRAY FROM PHASE 1 */
+];
+let filteredProducts = [...allProducts];
+let authMode = 'login';
+let selectedPayment = 'esewa';
+
+// ============================================
+// AUTH STATE OBSERVER
+// ============================================
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  updateUserUI();
+  if(user) {
+    loadUserData();
+  } else {
+    // Load from localStorage if not logged in
+    cart = JSON.parse(localStorage.getItem('minaCart')) || [];
+    wishlist = JSON.parse(localStorage.getItem('minaWishlist')) || [];
+    updateCart();
+    updateWishlistBadge();
+  }
+});
+
+function updateUserUI() {
+  const userBtn = document.getElementById('userBtn');
+  if(currentUser) {
+    const name = currentUser.displayName || currentUser.email;
+    const initial = name[0].toUpperCase();
+    userBtn.innerHTML = `<div class="user-avatar">${initial}</div>`;
+    userBtn.onclick = () => openAccount();
+  } else {
+    userBtn.innerHTML = '👤';
+    userBtn.onclick = () => openAuth();
+  }
+}
+
+async function loadUserData() {
+  if(!currentUser) return;
+  
+  try {
+    // Load cart from Firestore
+    const cartSnapshot = await db.collection('users').doc(currentUser.uid).collection('cart').get();
+    if(!cartSnapshot.empty) {
+      cart = cartSnapshot.docs.map(doc => doc.data());
+    }
+    
+    // Load wishlist
+    const wishlistSnapshot = await db.collection('users').doc(currentUser.uid).collection('wishlist').get();
+    if(!wishlistSnapshot.empty) {
+      wishlist = wishlistSnapshot.docs.map(doc => doc.data().productId);
+    }
+    
+    updateCart();
+    updateWishlistBadge();
+    
+  } catch(error) {
+    console.error('Error loading user data:', error);
+  }
+}
+
+async function syncCartToFirebase() {
+  if(!currentUser) return;
+  const userCartRef = db.collection('users').doc(currentUser.uid).collection('cart');
+  
+  try {
+    // Clear existing
+    const existing = await userCartRef.get();
+    existing.docs.forEach(doc => doc.ref.delete());
+    
+    // Add current cart
+    cart.forEach((item, index) => {
+      userCartRef.doc(`item_${index}`).set(item);
+    });
+  } catch(error) {
+    console.error('Error syncing cart:', error);
+  }
+}
+
+async function syncWishlistToFirebase() {
+  if(!currentUser) return;
+  const userWishlistRef = db.collection('users').doc(currentUser.uid).collection('wishlist');
+  
+  try {
+    const existing = await userWishlistRef.get();
+    existing.docs.forEach(doc => doc.ref.delete());
+    
+    wishlist.forEach(id => {
+      userWishlistRef.doc(`product_${id}`).set({
+        productId: id,
+        addedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+  } catch(error) {
+    console.error('Error syncing wishlist:', error);
+  }
+}
+
+// ============================================
+// AUTHENTICATION FUNCTIONS
+// ============================================
+function openAuth() {
+  document.getElementById('authOverlay').classList.add('open');
+}
+
+function closeAuth() {
+  document.getElementById('authOverlay').classList.remove('open');
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authSuccess').style.display = 'none';
+}
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  const tabs = document.querySelectorAll('.auth-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  tabs[mode === 'login' ? 0 : 1].classList.add('active');
+  
+  document.getElementById('nameField').style.display = mode === 'signup' ? 'block' : 'none';
+  document.getElementById('authSubmitBtn').textContent = mode === 'login' ? 'Sign In' : 'Create Account';
+  document.getElementById('authError').style.display = 'none';
+}
+
+async function handleAuth(e) {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value;
+  const password = document.getElementById('authPassword').value;
+  const name = document.getElementById('authName').value;
+  const errorDiv = document.getElementById('authError');
+  const successDiv = document.getElementById('authSuccess');
+  const btn = document.getElementById('authSubmitBtn');
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Processing...';
+  errorDiv.style.display = 'none';
+  successDiv.style.display = 'none';
+  
+  try {
+    if(authMode === 'signup') {
+      const result = await auth.createUserWithEmailAndPassword(email, password);
+      await result.user.updateProfile({displayName: name});
+      
+      // Create user document
+      await db.collection('users').doc(result.user.uid).set({
+        name: name,
+        email: email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        totalOrders: 0,
+        totalSpent: 0
+      });
+      
+      // Sync local cart/wishlist to Firebase
+      await syncCartToFirebase();
+      await syncWishlistToFirebase();
+      
+      successDiv.textContent = '✓ Account created! Welcome to MINA 🌿';
+      successDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        closeAuth();
+        showToast('Welcome to MINA!', 'success');
+      }, 1500);
+      
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+      
+      successDiv.textContent = '✓ Signed in successfully!';
+      successDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        closeAuth();
+        showToast('Welcome back!', 'success');
+      }, 1000);
+    }
+  } catch(error) {
+    let errorMessage = error.message;
+    if(error.code === 'auth/email-already-in-use') {
+      errorMessage = 'This email is already registered. Please sign in instead.';
+    } else if(error.code === 'auth/wrong-password') {
+      errorMessage = 'Incorrect password. Please try again.';
+    } else if(error.code === 'auth/user-not-found') {
+      errorMessage = 'No account found with this email. Please sign up.';
+    }
+    
+    errorDiv.textContent = '✗ ' + errorMessage;
+    errorDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
+  }
+}
+
+async function googleSignIn() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    
+    // Check if user doc exists, create if not
+    const userDoc = await db.collection('users').doc(result.user.uid).get();
+    if(!userDoc.exists) {
+      await db.collection('users').doc(result.user.uid).set({
+        name: result.user.displayName,
+        email: result.user.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        totalOrders: 0,
+        totalSpent: 0
+      });
+    }
+    
+    await syncCartToFirebase();
+    await syncWishlistToFirebase();
+    
+    closeAuth();
+    showToast('Welcome to MINA!', 'success');
+  } catch(error) {
+    showToast(error.message, 'error');
+  }
+}
+
+function signOut() {
+  auth.signOut().then(() => {
+    cart = [];
+    wishlist = [];
+    localStorage.clear();
+    updateCart();
+    updateWishlistBadge();
+    closeAccount();
+    showToast('Signed out successfully', 'success');
+  });
+}
+
+// ============================================
+// ACCOUNT/PROFILE
+// ============================================
+function openAccount() {
+  if(!currentUser) {
+    openAuth();
+    return;
+  }
+  
+  const name = currentUser.displayName || 'User';
+  const initial = name[0].toUpperCase();
+  
+  document.getElementById('accountAvatar').textContent = initial;
+  document.getElementById('accountName').textContent = name;
+  document.getElementById('accountEmail').textContent = currentUser.email;
+  
+  loadOrders();
+  loadWishlistView();
+  
+  document.getElementById('accountOverlay').classList.add('open');
+}
+
+function closeAccount() {
+  document.getElementById('accountOverlay').classList.remove('open');
+}
+
+function switchAccountTab(tab) {
+  document.querySelectorAll('.account-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.account-content').forEach(c => c.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(`${tab}Content`).classList.add('active');
+  
+  if(tab === 'orders') loadOrders();
+  if(tab === 'wishlist') loadWishlistView();
+}
+
+async function loadOrders() {
+  if(!currentUser) return;
+  
+  const ordersList = document.getElementById('ordersList');
+  ordersList.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted)"><span class="loading"></span> Loading orders...</div>';
+  
+  try {
+    const ordersSnapshot = await db.collection('orders')
+      .where('userId', '==', currentUser.uid)
+      .orderBy('createdAt', 'desc')
+      .get();
+    
+    if(ordersSnapshot.empty) {
+      ordersList.innerHTML = `
+        <div style="text-align:center;padding:3rem;color:var(--text-muted)">
+          <div style="font-size:3rem;margin-bottom:1rem;opacity:0.3">📦</div>
+          <p>No orders yet</p>
+          <p style="font-size:0.85rem;margin-top:0.5rem">Start shopping to see your orders here</p>
+        </div>
+      `;
+      return;
+    }
+    
+    ordersList.innerHTML = ordersSnapshot.docs.map(doc => {
+      const order = doc.data();
+      const date = order.createdAt.toDate().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      
+      return `
+        <div class="order-item">
+          <div class="order-header">
+            <div>
+              <div class="order-id">Order #${doc.id.slice(0, 8).toUpperCase()}</div>
+              <div class="order-date">${date}</div>
+            </div>
+            <div class="order-status status-${order.status}">${order.status}</div>
+          </div>
+          <div class="order-items-preview">
+            ${order.items.slice(0, 4).map(item => 
+              `<div class="order-item-thumb" style="background-image:url('${item.img}')"></div>`
+            ).join('')}
+            ${order.items.length > 4 ? `<div style="font-size:0.85rem;color:var(--text-muted);align-self:center">+${order.items.length - 4} more</div>` : ''}
+          </div>
+          <div class="order-total">Total: NPR ${order.total.toLocaleString()}</div>
+        </div>
+      `;
+    }).join('');
+    
+  } catch(error) {
+    console.error('Error loading orders:', error);
+    ordersList.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted)">Error loading orders. Please try again.</div>';
+  }
+}
+
+function loadWishlistView() {
+  const grid = document.getElementById('wishlistGrid');
+  const wishedProducts = allProducts.filter(p => wishlist.includes(p.id));
+  
+  if(wishedProducts.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-muted);grid-column:1/-1"><div style="font-size:3rem;margin-bottom:1rem;opacity:0.3">♡</div><p>Your wishlist is empty</p></div>';
+    return;
+  }
+  
+  grid.innerHTML = wishedProducts.map(p => `
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <div class="product-img" style="background-image:url('${p.img}')"></div>
+        <button class="product-wish active" onclick="toggleWishlist(${p.id}, event); setTimeout(loadWishlistView, 100)">♥</button>
+      </div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">NPR ${p.price.toLocaleString()}</div>
+      <button class="btn-add" onclick="addToCart(${p.id}, event)" style="width:100%;margin-top:0.5rem">Add to Bag</button>
+    </div>
+  `).join('');
+  
+  grid.style.display = 'grid';
+  grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  grid.style.gap = '1.5rem';
+}
+
+// ============================================
+// CHECKOUT & PAYMENT
+// ============================================
+function openCheckout() {
+  if(!currentUser) {
+    showToast('Please sign in to checkout', 'error');
+    closeCart();
+    openAuth();
+    return;
+  }
+  
+  if(cart.length === 0) {
+    showToast('Your cart is empty', 'error');
+    return;
+  }
+  
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = Math.round(subtotal * 0.13);
+  const total = subtotal + tax;
+  
+  document.getElementById('checkoutSubtotal').textContent = `NPR ${subtotal.toLocaleString()}`;
+  document.getElementById('checkoutTax').textContent = `NPR ${tax.toLocaleString()}`;
+  document.getElementById('checkoutTotal').textContent = `NPR ${total.toLocaleString()}`;
+  
+  // Pre-fill email if user is logged in
+  if(currentUser) {
+    document.getElementById('checkoutEmail').value = currentUser.email;
+  }
+  
+  closeCart();
+  document.getElementById('checkoutOverlay').classList.add('open');
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutOverlay').classList.remove('open');
+}
+
+function selectPayment(element, method) {
+  document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+  element.classList.add('selected');
+  selectedPayment = method;
+}
+
+async function placeOrder() {
+  if(!currentUser) {
+    showToast('Please sign in first', 'error');
+    return;
+  }
+  
+  const form = document.getElementById('checkoutForm');
+  if(!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Processing...';
+  
+  try {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const tax = Math.round(subtotal * 0.13);
+    const total = subtotal + tax;
+    
+    const orderData = {
+      userId: currentUser.uid,
+      userEmail: currentUser.email,
+      userName: currentUser.displayName || '',
+      items: cart,
+      subtotal: subtotal,
+      tax: tax,
+      total: total,
+      paymentMethod: selectedPayment,
+      status: 'pending',
+      shippingAddress: {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('checkoutEmail').value,
+        phone: document.getElementById('phone').value,
+        address1: document.getElementById('address1').value,
+        address2: document.getElementById('address2').value || '',
+        city: document.getElementById('city').value,
+        province: document.getElementById('province').value
+      },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    // Create order
+    await db.collection('orders').add(orderData);
+    
+    // Update user stats
+    await db.collection('users').doc(currentUser.uid).update({
+      totalOrders: firebase.firestore.FieldValue.increment(1),
+      totalSpent: firebase.firestore.FieldValue.increment(total)
+    });
+    
+    // Clear cart
+    cart = [];
+    localStorage.setItem('minaCart', JSON.stringify(cart));
+    await syncCartToFirebase();
+    updateCart();
+    
+    closeCheckout();
+    showToast('Order placed successfully! 🎉', 'success');
+    
+    // Show order confirmation
+    setTimeout(() => {
+      openAccount();
+      switchAccountTab('orders');
+    }, 1500);
+    
+  } catch(error) {
+    console.error('Order error:', error);
+    showToast('Error placing order: ' + error.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Place Order';
+  }
+}
+
+// ============================================
+// CART FUNCTIONS (Updated for Firebase)
+// ============================================
+function addToCart(productId, event) {
+  event?.stopPropagation();
+  const product = allProducts.find(p => p.id === productId);
+  if(!product) return;
+  
+  const existingItem = cart.find(item => item.productId === productId);
+  
+  if(existingItem) {
+    existingItem.quantity++;
+  } else {
+    cart.push({
+      productId: productId,
+      name: product.name,
+      price: product.price,
+      img: product.img,
+      quantity: 1
+    });
+  }
+  
+  localStorage.setItem('minaCart', JSON.stringify(cart));
+  if(currentUser) syncCartToFirebase();
+  updateCart();
+  showToast('Added to bag! 🛍️', 'success');
+}
+
+// ============================================
+// WISHLIST (Updated for Firebase)
+// ============================================
+function toggleWishlist(productId, event) {
+  event?.stopPropagation();
+  const index = wishlist.indexOf(productId);
+  
+  if(index > -1) {
+    wishlist.splice(index, 1);
+    showToast('Removed from wishlist', 'success');
+  } else {
+    wishlist.push(productId);
+    showToast('Added to wishlist! ❤️', 'success');
+  }
+  
+  localStorage.setItem('minaWishlist', JSON.stringify(wishlist));
+  if(currentUser) syncWishlistToFirebase();
+  updateWishlistBadge();
+  renderProducts();
+}
+
+// ============================================
+// [COPY ALL OTHER FUNCTIONS FROM PHASE 1]
+// ============================================
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', () => {
+  renderProducts();
+  observeFadeUps();
+});
+</script>
+
+</body>
+</html>
